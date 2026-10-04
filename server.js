@@ -87,7 +87,51 @@ app.post('/api/articles', (req, res) => {
   articles.push(nouvelArticle);
   res.status(201).json({ message: 'Article créé', article: nouvelArticle });
 });
+// 1. GET /about
+app.get('/about', (req, res) => {
+    res.json({
+        appName: "API du blog",
+        author: "Arwa",
+        version: "1.0.0"
+    });
+});
+// 2. Les utilisateurs
+const users = [
+    { id: 1, name: 'Aya', email: 'aya@gmail.com' },
+    { id: 2, name: 'Omar', email: 'omar@gmail.com' },
+    { id: 3, name: 'Youssef', email: 'youssef@gmail.com' }
+];
+
+// GET /api/users  (+ bonus : /api/users?name=Aya)
+app.get('/api/users', (req, res) => {
+    const { name } = req.query;
+    let result = users;
+    if (name) {
+        result = users.filter(u => u.name === name);
+    }
+    res.json(result);
+});
+
+// 3. GET /api/users/:id
+app.get('/api/users/:id', (req, res) => {
+    const id = Number(req.params.id);
+    const user = users.find(u => u.id === id);
+    if (!user) {
+        return res.status(404).json({ error: `Utilisateur ${id} introuvable` });
+    }
+    res.json(user);
+});
+
+// 4. POST /contact
+app.post('/contact', (req, res) => {
+    const { email, message } = req.body;
+    if (!email || !message) {
+        return res.status(400).json({ error: "L'email et le message sont obligatoires" });
+    }
+    res.status(200).json({ message: "Merci, votre message a bien été reçu" });
+});
 // 4. Bind and listen: wait for incoming HTTP requests on port 3000
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
+
